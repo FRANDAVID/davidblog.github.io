@@ -449,6 +449,119 @@ listening on eth0, link-type EN10MB (Ethernet), capture size 65535 bytes
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/15/tcpdump%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/10/15/tcpdump%E5%91%BD%E4%BB%A4/" class="post-title-link" itemprop="url">tcpdump命令</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2020-10-15 00:00:00 / Modified: 15:04:56" itemprop="dateCreated datePublished" datetime="2020-10-15T00:00:00+08:00">2020-10-15</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%91%BD%E4%BB%A4/" itemprop="url" rel="index"><span itemprop="name">命令</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="tcpdump"><a href="#tcpdump" class="headerlink" title="tcpdump"></a>tcpdump</h3><pre><code>tcpdump [-adeflnNOpqStvx][-c&lt;数据包数目&gt;][-dd][-ddd][-F&lt;表达文件&gt;][-i&lt;网络界面&gt;][-r&lt;数据包文件&gt;][-s&lt;数据包大小&gt;][-tt][-T&lt;数据包类型&gt;][-vv][-w&lt;数据包文件&gt;][输出数据栏位]
+
+-c：指定要抓取的包数量；
+-i interface：指定tcpdump需要监听的接口
+-n：对地址以数字方式显式，否则显式为主机名，也就是说-n选项不做主机名解析。
+-nn：除了-n的作用外，还把端口显示为数值，否则显示端口服务名。
+-s: &lt;数据包大小&gt; 设置每个数据包的大小。
+-N：不打印出host的域名部分。。
+-P：指定要抓取的包是流入还是流出的包。可以给定的值为&quot;in&quot;、&quot;out&quot;和&quot;inout&quot;，默认为&quot;inout&quot;。
+-s len：设置tcpdump的数据包抓取长度为len，如果不设置默认将会是65535字节。对于要抓取的数据包较大时，长度设置不够可能会产生包截断，若出现包截断，
+-e：输出的每行中都将包括数据链路层头部信息，例如源MAC和目标MAC。
+-q：快速打印输出。即打印很少的协议相关信息，从而输出行都比较简短。
+-X：输出包的头部数据，会以16进制和ASCII两种方式同时输出。
+-XX：输出包的头部数据，会以16进制和ASCII两种方式同时输出，更详细。
+-v：当分析和打印的时候，产生详细的输出。
+-vv：产生比-v更详细的输出。
+-vvv：产生比-vv更详细的输出。
+-w&lt;数据包文件&gt; 把数据包数据写入指定的文件。
+
+
+host(缺省类型): 指明一台主机
+net: 指明一个网络地址
+port: 指明端口号
+src: 指定网络源地址
+dst: 指定目标网络地址；</code></pre>
+<hr>
+<h3 id="常见用法"><a href="#常见用法" class="headerlink" title="常见用法"></a>常见用法</h3><pre><code>tcpdump -i eth0 net 59.111.243.17
+对网卡eth0进行抓包，并且只抓所有进入和离开网络地址59.111.243.17的包
+
+tcpdump –i eth0 net 59.111.243.17 and src port 80
+对网卡eth0进行抓包，并且只抓所有进入和离开网络地址59.111.243.17的包，且源端口号为80；
+
+tcpdump -i eth0 net 59.111.243.17 -c 10000 -w temp.pcap
+对网卡eth0进行抓包，并且只抓所有进入和离开网络地址59.111.243.17的包，抓包个数指定为10000个，并写入temp.pcap</code></pre>
+<ul>
+<li><p>对特定端口抓包</p>
+<pre><code>  tcpdump host 172.25.123.34 |grep 6080</code></pre>
+</li>
+<li><p>对GET请求进行抓包</p>
+</li>
+</ul>
+<pre><code>    sudo tcpdump -s 0 -A &#39;tcp dst port 80 and tcp[((tcp[12:1] &amp; 0xf0) &gt;&gt; 2):4] = 0x47455420&#39;</code></pre>
+<ul>
+<li>对POST请求进行抓包</li>
+</ul>
+<pre><code>    sudo tcpdump -s 0 -A &#39;tcp dst port 80 and (tcp[((tcp[12:1] &amp; 0xf0) &gt;&gt; 2):4] = 0x504f5354)&#39;</code></pre>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2020/10/11/Nginx%E7%9B%B8%E5%BA%94%E6%97%B6%E9%97%B4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1177,7 +1290,7 @@ create table FK_TEST
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
