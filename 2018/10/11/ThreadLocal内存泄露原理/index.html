@@ -20,15 +20,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/archives/2029/10/index.html">
+  <meta name="description" content="深入分析 ThreadLocal 内存泄漏问题">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThreadLocal内存泄露原理及结构">
+<meta property="og:url" content="http://example.com/2018/10/11/ThreadLocal%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%8E%9F%E7%90%86/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="深入分析 ThreadLocal 内存泄漏问题">
 <meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-10-11T09:23:00.000Z">
+<meta property="article:modified_time" content="2020-10-30T09:55:14.927Z">
 <meta property="article:author" content="John Doe">
+<meta property="article:tag" content="JVM 弱引用 线程池">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/archives/2029/10/">
+<link rel="canonical" href="http://example.com/2018/10/11/ThreadLocal%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%8E%9F%E7%90%86/">
 
 
 <script id="page-configurations">
@@ -36,12 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Archive | Hexo</title>
+  <title>ThreadLocal内存泄露原理及结构 | Hexo</title>
   
 
 
@@ -149,50 +154,94 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">Um..! 8 posts in total. Keep on posting.</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/10/11/ThreadLocal%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John Doe">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Hexo">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ThreadLocal内存泄露原理及结构
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2018-10-11 17:23:00" itemprop="dateCreated datePublished" datetime="2018-10-11T17:23:00+08:00">2018-10-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2020-10-30 17:55:14" itemprop="dateModified" datetime="2020-10-30T17:55:14+08:00">2020-10-30</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index"><span itemprop="name">java</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2029</span>
+        <h1 id="深入分析-ThreadLocal-内存泄漏问题"><a href="#深入分析-ThreadLocal-内存泄漏问题" class="headerlink" title="深入分析 ThreadLocal 内存泄漏问题"></a>深入分析 ThreadLocal 内存泄漏问题</h1>
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2029-10-11T17:23:00+08:00"
-              content="2029-10-11">
-          10-11
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JVM-%E5%BC%B1%E5%BC%95%E7%94%A8-%E7%BA%BF%E7%A8%8B%E6%B1%A0/" rel="tag"># JVM 弱引用 线程池</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2029/10/11/Oracle%E6%AD%BB%E9%94%81%E6%A3%80%E6%B5%8B/" itemprop="url">
-            <span itemprop="name">Oracles死锁检测</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/11/%E3%80%8AOracle%E6%95%B0%E6%8D%AE%E5%BA%93%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95%E8%AE%BA%E5%92%8C%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5%E3%80%8B-10.3.3-%E6%AD%BB%E9%94%81-%E5%A4%96%E9%94%AE%E5%BC%95%E5%8F%91%E6%AD%BB%E9%94%81/" rel="next" title="《Oracle数据库性能优化方法论和最佳实践》-10.3.3-死锁-外键引发死锁">
+      《Oracle数据库性能优化方法论和最佳实践》-10.3.3-死锁-外键引发死锁 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
   </article>
-
-
-    </div>
-  </div>
   
   
-  
-
   
 
 
@@ -245,6 +294,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B7%B1%E5%85%A5%E5%88%86%E6%9E%90-ThreadLocal-%E5%86%85%E5%AD%98%E6%B3%84%E6%BC%8F%E9%97%AE%E9%A2%98"><span class="nav-number">1.</span> <span class="nav-text">深入分析 ThreadLocal 内存泄漏问题</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
